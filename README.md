@@ -156,7 +156,8 @@ SELECT posts.user_id, COUNT(likes.id) AS like_count
 FROM posts
 LEFT JOIN likes ON posts.id = likes.post_id
 GROUP BY posts.user_id
-ORDER BY like_count DESC;
+ORDER BY like_count DESC
+LIMIT 1;
 ```
 ```sql
 -- Which post has the most comments?
