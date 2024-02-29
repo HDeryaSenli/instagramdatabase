@@ -2,7 +2,7 @@
 
 An Instagram-like database building practice and a brief data analysis using pgSQL. Of course, it doesn't involve all of the features of Instagram. Design and logic of it can be seen by using the link below.
 
-dbdiagram.io was used. [Link to database design][(https://dbdocs.io/halilderyasenli/instagramdb)]
+dbdiagram.io was used. Link to database design: [(https://dbdocs.io/halilderyasenli/instagramdb)]
 
 Design and logic of it can be seen by using link below.
 
