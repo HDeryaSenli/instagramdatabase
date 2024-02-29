@@ -141,24 +141,30 @@ GROUP BY leader_id
 ORDER BY follower_count DESC
 LIMIT 1;
 ```
+![image](https://github.com/HDeryaSenli/instagramdatabase/assets/112333951/959edbed-534a-4f14-9a8c-6a325fd059db)
 
 ```sql
 -- Which post has the most likes?
-SELECT post_id, COUNT(likes.id) AS like_count_per_post
+SELECT post_id, COUNT(id) AS like_count
 FROM likes
+WHERE post_id IS NOT NULL
 GROUP BY post_id
-ORDER BY like_count_per_post DESC
+ORDER BY like_count DESC
 LIMIT 1;
 ```
+![image](https://github.com/HDeryaSenli/instagramdatabase/assets/112333951/9af166e5-464a-4594-90a6-8237fbf1b5d7)
+At first when I didn't use **NOT NULL** db gave me an answer which post_id was **NULL**. So I've added **WHERE post_id IS NOT NULL** constraint.
 ```sql
 -- Which user has the most likes in total?
 SELECT posts.user_id, COUNT(likes.id) AS like_count
 FROM posts
-LEFT JOIN likes ON posts.id = likes.post_id
+INNER JOIN likes ON posts.id = likes.post_id
 GROUP BY posts.user_id
 ORDER BY like_count DESC
 LIMIT 1;
 ```
+![image](https://github.com/HDeryaSenli/instagramdatabase/assets/112333951/640f4c18-c7b3-46f9-a077-d28d5a7a5eb2)
+
 ```sql
 -- Which post has the most comments?
 SELECT post_id, COUNT(comments.id) AS comment_count_per_post
@@ -167,6 +173,8 @@ GROUP BY post_id
 ORDER BY comment_count_per_post DESC
 LIMIT 1;
 ```
+![image](https://github.com/HDeryaSenli/instagramdatabase/assets/112333951/c29ec351-6cce-4a3d-9ca4-e87342d3251e)
+
 ```sql
 -- Who are the users who registered to the site last and first?
 (
@@ -183,6 +191,8 @@ ORDER BY created_at ASC
 LIMIT 1
 );
 ```
+![image](https://github.com/HDeryaSenli/instagramdatabase/assets/112333951/4902198e-d683-44d0-9293-3472bac19358)
+
 ```sql
 -- Which hashtags are most frequently used?
 SELECT hashtags.title, count(hashtags_posts.id)
@@ -191,6 +201,8 @@ JOIN hashtags_posts ON hashtags.id = hashtags_posts.hashtag_id
 GROUP BY hashtags.title
 ORDER BY count(hashtags_posts.id) DESC;
 ```
+![image](https://github.com/HDeryaSenli/instagramdatabase/assets/112333951/6c5660e5-368d-4c1e-b3d3-7c697abe8ee5)
+
 ```sql
 -- What is the average number of posts per user?
 SELECT AVG(post_count) AS average_posts_per_user
@@ -202,8 +214,10 @@ FROM
     GROUP BY users.id
 ) AS post_counts;
 ```
+![image](https://github.com/HDeryaSenli/instagramdatabase/assets/112333951/3d8da7e9-8c0c-4dc3-bef9-a26f5578286d)
+
 ```sql
--- What is the average number of likes on posts?
+-- What is the average number of likes per post?
 SELECT AVG(likes_count) AS avg_likes_per_posts
 FROM
 (   
@@ -213,6 +227,8 @@ FROM
     GROUP BY posts.id
 ) AS post_likes;
 ```
+![image](https://github.com/HDeryaSenli/instagramdatabase/assets/112333951/1a772734-4885-45ba-b3ad-6acd3806c402)
+
 ```sql
 -- What is the average length of people's bio?
 SELECT AVG(bio_length) AS avg_bio_length
@@ -227,3 +243,46 @@ FROM
 SELECT AVG(LENGTH(bio)) AS bio
 FROM users;
 ```
+![image](https://github.com/HDeryaSenli/instagramdatabase/assets/112333951/59894161-9549-4410-bfc9-71e6989689e3)
+
+
+```sql
+--Is there a correlation between the use of specific hashtags and post engagement metrics?
+SELECT hashtags.title,
+       COUNT(posts.id) AS total_posts,
+       COUNT(DISTINCT likes.id) AS total_likes,
+       COUNT(DISTINCT comments.id) AS total_comments
+FROM hashtags
+JOIN hashtags_posts ON hashtags.id = hashtags_posts.hashtag_id
+JOIN posts ON hashtags_posts.post_id = posts.id
+JOIN likes ON posts.id = likes.post_id
+JOIN comments ON posts.id = comments.post_id
+GROUP BY hashtags.title;
+
+--Honestly, after this query I find it much easier to download results and work on Excel for basic math because there are only 187 results.
+Results are looking like below photos:
+```
+![image](https://github.com/HDeryaSenli/instagramdatabase/assets/112333951/48c42c2a-dd1c-4655-a640-c36aa257c8f8)
+
+I’ll do total_posts / total likes and total_posts / total comments to see likes per post and comment per post regarding that hashtag.
+It looks like this:
+![image](https://github.com/HDeryaSenli/instagramdatabase/assets/112333951/adfff615-f767-4830-b074-619df4b50aea)
+
+Now I am going to multiply them . One can think like now the result is a coefficient. The higher it is the better our hashtag title.
+Results are below:
+![image](https://github.com/HDeryaSenli/instagramdatabase/assets/112333951/ee138877-6c47-4654-9156-1816ba6c3e33)
+
+So, I’ll just order them from highest to lowest. Bigger the number, better.
+![image](https://github.com/HDeryaSenli/instagramdatabase/assets/112333951/715d0604-4acc-4aba-8964-bb58d6d696bb)
+
+Even though there are no huge differences, looks like “carissa” have the biggest impact regarding the popularity of the post.
+
+-> 22705 posts used the hashtag “carissa”.
+
+-> Likes per post is 5,2 and comments per post is 29,03.
+
+
+
+
+
+
